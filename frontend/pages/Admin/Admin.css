@@ -1,0 +1,291 @@
+/* --- BIẾN MÀU SẮC CHỦ ĐẠO --- */
+:root {
+  --pink-main: #f06292;
+  --pink-light: #fce4ec;
+  --pink-soft: #fff1f5;
+  --pink-deep: #d81b60;
+  --white: #ffffff;
+  --edit-blue: #3498db;
+  --delete-red: #e74c3c;
+  --text-gray: #555555;
+  --font-dieu: 'Dancing Script', cursive; /* Font dành cho các tiêu đề uốn lượn */
+}
+
+/* --- TỔNG THỂ TRANG ADMIN --- */
+.admin-page {
+  padding: 40px 20px;
+  background: #fff5f7;
+  min-height: 100vh;
+  font-family: 'Quicksand', sans-serif;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  padding: 0 10px;
+}
+
+.admin-title {
+  color: var(--pink-deep);
+  font-size: 2.2rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: var(--font-dieu);
+  text-shadow: 2px 2px 0px var(--pink-light);
+}
+
+.btn-logout-admin {
+  background: var(--white);
+  color: var(--pink-deep);
+  border: 2px dashed var(--pink-main);
+  padding: 10px 25px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.btn-logout-admin:hover {
+  background: var(--pink-main);
+  color: white;
+  transform: scale(1.05);
+}
+
+/* --- BỐ CỤC CHÍNH (2 CỘT) --- */
+.admin-main-content {
+  display: flex;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: flex-start;
+}
+
+@media (max-width: 900px) {
+  .admin-main-content { flex-direction: column; }
+}
+
+.admin-column {
+  flex: 1;
+  background: var(--white);
+  padding: 30px;
+  border-radius: 30px 10px;
+  box-shadow: 0 15px 35px rgba(216, 27, 96, 0.08);
+  border: 1px solid var(--pink-light);
+}
+
+.admin-column h3 {
+  color: var(--pink-deep);
+  margin-bottom: 25px;
+  text-align: center;
+  border-bottom: 2px solid var(--pink-light);
+  padding-bottom: 15px;
+  font-size: 1.5rem;
+  font-family: var(--font-dieu);
+}
+
+/* --- FORM NHẬP LIỆU --- */
+.admin-form { display: flex; flex-direction: column; gap: 15px; }
+
+.form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.form-group.flex-2 { flex: 2; }
+.form-group.flex-1 { flex: 1; }
+
+.form-group label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--pink-deep);
+  font-size: 0.9rem;
+}
+
+.form-group input, 
+.form-group textarea, 
+.form-group select {
+  width: 100%;
+  padding: 12px 18px;
+  border: 2px solid var(--pink-light);
+  border-radius: 15px;
+  background: var(--pink-soft);
+  outline: none;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--pink-main);
+  background: var(--white);
+  box-shadow: 0 0 10px rgba(240, 98, 146, 0.1);
+}
+
+/* Ô NHẬP LỜI CHÚC CÁ NHÂN (Làm to và nổi bật hơn) */
+.form-group textarea {
+  min-height: 150px;
+  line-height: 1.6;
+  font-family: inherit;
+}
+
+/* --- NÚT BẤM FORM --- */
+.btn-submit {
+  width: 100%;
+  padding: 16px;
+  border-radius: 15px;
+  font-weight: 800;
+  font-size: 1.1rem;
+  cursor: pointer;
+  border: none;
+  background: linear-gradient(135deg, #f06292, #d81b60);
+  color: white;
+  box-shadow: 0 8px 20px rgba(216, 27, 96, 0.2);
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(216, 27, 96, 0.3);
+}
+
+.btn-submit:disabled {
+  background: #ccc;
+  box-shadow: none;
+}
+
+.btn-cancel {
+  background: #bdc3c7;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 5px;
+  transition: 0.3s;
+}
+
+.btn-cancel:hover { background: #95a5a6; }
+
+/* --- DANH SÁCH ĐÃ LƯU --- */
+.saved-list {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.saved-item {
+  background: var(--pink-soft);
+  padding: 20px;
+  border-radius: 20px 5px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 5px solid var(--pink-main);
+  transition: 0.3s;
+}
+
+.saved-item:hover {
+  transform: scale(1.02);
+  background: var(--white);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.item-name {
+  font-weight: 800;
+  color: var(--pink-deep);
+  font-size: 1.1rem;
+}
+
+/* FILE UPLOAD */
+.custom-file-upload {
+  background: var(--pink-soft);
+  border: 2px dashed var(--pink-main);
+  padding: 15px;
+  border-radius: 15px;
+  text-align: center;
+  transition: 0.3s;
+}
+/* --- CẤU TRÚC CỘT DANH SÁCH ĐÃ LƯU --- */
+.saved-list {
+  max-height: 650px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.saved-item {
+  background: var(--white);
+  padding: 18px;
+  border-radius: 20px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--pink-light);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.saved-item:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 25px rgba(216, 27, 96, 0.1);
+  border-color: var(--pink-main);
+}
+
+/* --- ĐỊNH DẠNG CỤM NÚT BẤM (ITEM ACTIONS) --- */
+.item-actions {
+  display: flex;
+  gap: 10px; /* Khoảng cách giữa 2 nút */
+  align-items: center;
+}
+
+/* Style chung cho nút trong danh sách */
+.item-actions button {
+  padding: 8px 18px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+  color: white;
+}
+
+/* --- NÚT SỬA (EDIT) --- */
+.btn-edit-sm {
+  background-color: var(--edit-blue); /* Màu xanh dương #3498db */
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+}
+
+.btn-edit-sm:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(52, 152, 219, 0.3);
+}
+
+/* --- NÚT XÓA (DELETE) --- */
+.btn-delete-sm {
+  background-color: var(--delete-red); /* Màu đỏ #e74c3c */
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+}
+
+.btn-delete-sm:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(231, 76, 60, 0.3);
+}
+
+/* Hiệu ứng khi nhấn nút */
+.item-actions button:active {
+  transform: scale(0.95);
+}
+.custom-file-upload:hover { background: var(--white); }

@@ -1,0 +1,85 @@
+.login-page {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+  padding: 20px;
+}
+
+.login-container {
+  background: white;
+  padding: 40px;
+  border-radius: 25px;
+  box-shadow: 0 15px 35px rgba(216, 27, 96, 0.15);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.login-title {
+  color: #d81b60;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.btn-group-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.btn-user, .btn-admin, .btn-confirm {
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 1rem;
+}
+
+.btn-user {
+  background: #f06292;
+  color: white;
+}
+
+.btn-admin {
+  background: white;
+  color: #f06292;
+  border: 2px solid #f06292;
+}
+
+.btn-confirm {
+  background: #d81b60;
+  color: white;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.btn-user:hover, .btn-confirm:hover {
+  background: #ad1457;
+  transform: translateY(-3px);
+}
+
+.form-group-login {
+  margin-bottom: 15px;
+}
+
+.form-group-login input, .form-group-login select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #f8bbd0;
+  background: #fff9fa;
+  outline: none;
+}
+
+.back-link {
+  margin-top: 20px;
+  color: #888;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+}

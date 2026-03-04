@@ -1,0 +1,134 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  overflow-x: hidden; /* Ngăn chặn cuộn ngang trên điện thoại */
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px; /* Giảm kích thước chữ tổng thể trên mobile */
+  }
+}
+
+/* IMPORT FONT CHỮ ĐIỆU ĐÀ */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@500;700&display=swap');
+
+:root {
+  --pink-main: #f06292;
+  --pink-light: #fff5f7;
+  --pink-soft: #fce4ec;
+  --pink-deep: #d81b60;
+  --white: #ffffff;
+  --font-main: 'Quicksand', sans-serif;
+  --font-style: 'Dancing Script', cursive; /* Font chữ viết tay dẹo */
+}
+
+.home-container { 
+  font-family: var(--font-main);
+  background-image: radial-gradient(#fff0f3 1px, transparent 1px);
+  background-size: 20px 20px; /* Thêm họa tiết chấm bi chìm */
+}
+
+/* TIÊU ĐỀ CHỮ DẸO */
+.header-title { 
+  font-family: var(--font-style);
+  font-size: 3.5rem !important;
+  color: var(--pink-deep); 
+  text-transform: none !important; /* Bỏ viết hoa toàn bộ để giữ nét uốn lượn */
+  margin-bottom: 30px;
+  filter: drop-shadow(2px 4px 6px rgba(216, 27, 96, 0.2));
+}
+
+.user-badge {
+  font-family: var(--font-main);
+  border: 2px dashed var(--pink-main) !important; /* Viền nét đứt điệu đà */
+  background: var(--white) !important;
+  border-radius: 30px 10px 30px 10px !important; /* Bo góc kiểu cách */
+}
+
+/* NÚT BẤM CÁCH ĐIỆU */
+.action-btn { 
+  border: none;
+  font-family: var(--font-main);
+  padding: 8px 20px !important;
+  border-radius: 15px 5px !important; /* Bo góc so le */
+  box-shadow: 3px 3px 0px var(--pink-soft); /* Đổ bóng cứng kiểu sticker */
+  transition: all 0.3s ease !important;
+}
+
+.action-btn:hover {
+  transform: scale(1.05) rotate(-2deg) !important; /* Nghiêng nhẹ khi hover */
+  box-shadow: 5px 5px 0px var(--pink-main);
+}
+
+.action-btn.active {
+  background: var(--pink-deep) !important;
+  color: white !important;
+  box-shadow: none !important;
+}
+
+/* CARD VÀ BẢNG XẾP HẠNG */
+.rank-list h3, .top-label {
+  font-family: var(--font-style);
+  font-size: 1.8rem;
+}
+
+.top-1-card p {
+  font-family: var(--font-style);
+  font-size: 2rem !important;
+  line-height: 1.2 !important;
+}
+
+.image-item {
+  border-radius: 40px 10px !important; /* Bo góc cực mạnh */
+  border: 2px solid var(--pink-soft) !important;
+}
+
+/* POPUP & INPUT */
+.comment-popup-content, .album-modal-content {
+  border: 3px double var(--pink-soft); /* Viền đôi sang chảnh */
+  border-radius: 50px 20px !important;
+}
+
+.popup-input-group {
+  border: 2px solid var(--pink-soft);
+  padding: 5px !important;
+}
+
+.popup-input-group input {
+  font-family: var(--font-main);
+  font-style: italic;
+}
+
+.popup-input-group button {
+  border-radius: 15px 5px !important;
+  font-family: var(--font-style);
+  font-size: 1.2rem;
+}
+
+.popup-comment-item {
+  border-radius: 20px 5px 20px 5px !important;
+  position: relative;
+}
+
+.popup-comment-item::after {
+  content: '✿';
+  position: absolute;
+  right: 10px;
+  bottom: 5px;
+  color: var(--pink-soft);
+  font-size: 0.8rem;
+}
+
+/* HIỆU ỨNG TRƯỢT MỀM MẠI CHO TEXT */
+.user-name {
+  font-family: var(--font-main);
+  letter-spacing: 0px !important;
+  color: var(--pink-deep);
+}
