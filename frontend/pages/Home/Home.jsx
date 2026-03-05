@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import "./Home.css";
 import FallingPetals from "../FallingPetals/FallingPetals";
+
+// Đảm bảo URL này trỏ chính xác đến Backend trên Render
 const API_BASE_URL = "https://women-s-day-guym.onrender.com/api/users"; 
 
 const Home = () => {
@@ -14,15 +16,22 @@ const Home = () => {
   const [commentText, setCommentText] = useState("");
   const [currentUser, setCurrentUser] = useState("Khách");
 
+  // Hàm ép link ảnh sang HTTPS để tránh lỗi Mixed Content trên Vercel
+  const getSecureUrl = (url) => {
+    if (!url) return "";
+    return url.replace("http://", "https://");
+  };
+
   const fetchData = async () => {
     try {
+      // Gọi đến /all để lấy danh sách người dùng
       const res = await axios.get(`${API_BASE_URL}/all`);
       setUsers(res.data);
     } catch (err) {
       console.error("Lỗi kết nối Backend:", err);
     }
   };
-//http://localhost:5000/api/users/all
+
   useEffect(() => {
     const storedUser = localStorage.getItem("username");
     if (storedUser) {
@@ -38,6 +47,7 @@ const Home = () => {
       return;
     }
     try {
+      // Đã sửa lỗi lặp URL: chỉ dùng ${API_BASE_URL}/like/...
       const res = await axios.patch(
         `${API_BASE_URL}/like/${userId}`,
         { username: currentUser }
@@ -48,6 +58,7 @@ const Home = () => {
       });
     } catch (err) {
       console.error("Lỗi thả tim:", err);
+      alert("Không thể thả tim, vui lòng kiểm tra kết nối!");
     }
   };
 
@@ -58,14 +69,18 @@ const Home = () => {
     }
     if (!commentText.trim()) return;
     try {
+      // Đã sửa lỗi lặp URL: chỉ dùng ${API_BASE_URL}/comment/...
       const res = await axios.post(
         `${API_BASE_URL}/comment/${userId}`,
         { author: currentUser, text: commentText }
       );
+      
+      // Cập nhật state cho cả Popup bình luận và danh sách chính
       setActiveCommentUser(res.data);
       setCommentText("");
       setUsers((prev) => prev.map((u) => (u._id === userId ? res.data : u)));
     } catch (err) {
+      console.error("Lỗi gửi bình luận:", err);
       alert("Không thể gửi bình luận");
     }
   };
@@ -150,18 +165,24 @@ const Home = () => {
             >
               <div className="placeholder-img">
                 {user.images && user.images[0] ? (
-                  <img src={user.images[0]} alt={user.fullname} />
+                  <img src={getSecureUrl(user.images[0])} alt={user.fullname} />
                 ) : (
-                  <span>{user.nickname || user.fullname}</span>
+                  <div className="no-img-text"><span>{user.nickname || user.fullname}</span></div>
                 )}
               </div>
               <div className="interaction-bar">
                 <span className="user-name">{user.nickname || user.fullname}</span>
                 <div className="action-group">
-                  <div className={`action-btn like-btn ${hasLiked ? "active" : ""}`} onClick={(e) => handleLike(e, user._id)}>
+                  <div 
+                    className={`action-btn like-btn ${hasLiked ? "active" : ""}`} 
+                    onClick={(e) => handleLike(e, user._id)}
+                  >
                     {hasLiked ? "❤️" : "🤍"} {user.likes || 0}
                   </div>
-                  <div className="action-btn comment-btn" onClick={(e) => { e.stopPropagation(); setActiveCommentUser(user); }}>
+                  <div 
+                    className="action-btn comment-btn" 
+                    onClick={(e) => { e.stopPropagation(); setActiveCommentUser(user); }}
+                  >
                     💬 {user.comments?.length || 0}
                   </div>
                 </div>
@@ -188,7 +209,9 @@ const Home = () => {
               <div className="modal-body">
                 <div className="ai-wish-box"><p>{activeUser.userWish}</p></div>
                 <div className="modal-gallery">
-                  {activeUser.images.map((img, i) => <img key={i} src={img} alt="8/3" />)}
+                  {activeUser.images.map((img, i) => (
+                    <img key={i} src={getSecureUrl(img)} alt="8/3" />
+                  ))}
                 </div>
               </div>
             </motion.div>
@@ -199,30 +222,51 @@ const Home = () => {
       {/* Comment Popup */}
       <AnimatePresence>
         {activeCommentUser && (
-          <motion.div className="comment-popup-overlay" onClick={() => setActiveCommentUser(null)}>
-            <motion.div className="comment-popup-content" onClick={(e) => e.stopPropagation()}>
+          <motion.div 
+            className="comment-popup-overlay" 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }} 
+            onClick={() => setActiveCommentUser(null)}
+          >
+            <motion.div 
+              className="comment-popup-content" 
+              initial={{ y: 50 }} 
+              animate={{ y: 0 }} 
+              exit={{ y: 50 }} 
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="popup-header">
                 <h3>Lời chúc tới {activeCommentUser.nickname || activeCommentUser.fullname}</h3>
                 <button onClick={() => setActiveCommentUser(null)}>✕</button>
               </div>
               <div className="popup-comment-list">
-                {activeCommentUser.comments?.map((c, i) => (
-                  <div key={i} className="popup-comment-item">
-                    <span className="comment-author">{c.author}:</span>
-                    <p className="comment-text">{c.text}</p>
-                  </div>
-                ))}
+                {activeCommentUser.comments?.length > 0 ? (
+                  activeCommentUser.comments.map((c, i) => (
+                    <div key={i} className="popup-comment-item">
+                      <span className="comment-author">{c.author}:</span>
+                      <p className="comment-text">{c.text}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="no-comments">Chưa có lời chúc nào. Hãy là người đầu tiên! 🌸</p>
+                )}
               </div>
               <div className="popup-input-group">
                 <input
                   type="text"
-                  placeholder={currentUser === "Khách" ? "Đăng nhập..." : `Lời chúc từ ${currentUser}...`}
+                  placeholder={currentUser === "Khách" ? "Đăng nhập để chúc..." : `Lời chúc từ ${currentUser}...`}
                   value={commentText}
                   disabled={currentUser === "Khách"}
                   onChange={(e) => setCommentText(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSendComment(activeCommentUser._id)}
                 />
-                <button disabled={currentUser === "Khách"} onClick={() => handleSendComment(activeCommentUser._id)}>Gửi</button>
+                <button 
+                  disabled={currentUser === "Khách" || !commentText.trim()} 
+                  onClick={() => handleSendComment(activeCommentUser._id)}
+                >
+                  Gửi
+                </button>
               </div>
             </motion.div>
           </motion.div>
