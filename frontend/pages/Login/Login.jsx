@@ -74,8 +74,8 @@ const Login = () => {
             <h2 className="login-title">GALAXY 8/3 🌸</h2>
             <p>Chọn vai trò của bạn để khám phá dải ngân hà</p>
             <div className="btn-group-choice">
-              <button className="btn-user" onClick={() => setView('userForm')}>KHÁCH THAM QUAN</button>
-              <button className="btn-admin" onClick={() => setView('adminForm')}>QUẢN TRỊ VIÊN</button>
+              <button className="btn-user" onClick={() => setView('userForm')}>KHÁCH QUA ĐƯỜNG BẤM VÀO ĐÂY</button>
+              <button className="btn-admin" onClick={() => setView('adminForm')}>MUỐN NỔI TIẾNG Ư ?</button>
             </div>
           </motion.div>
         )}
