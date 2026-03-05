@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import './Login.css';
+const API_BASE_URL = "https://women-s-day-guym.onrender.com/api/users"; 
 
 const Login = () => {
   const [view, setView] = useState('choice'); 
@@ -21,7 +22,7 @@ const Login = () => {
 
     try {
       // Gửi yêu cầu lưu Guest vào Backend
-      const res = await axios.post('http://localhost:5000/api/users/login-user', formData);
+      const res = await axios.post('${API_BASE_URL}/api/users/login-user', formData);
       
       // Lưu thông tin định danh vào localStorage để các tính năng tương tác sử dụng
       localStorage.setItem('username', res.data.username);
@@ -43,7 +44,7 @@ const Login = () => {
 
     try {
       // Xác thực Admin qua Backend
-      const res = await axios.post('http://localhost:5000/api/users/login-admin', { account, password });
+      const res = await axios.post('${API_BASE_URL}/api/users/login-admin', { account, password });
       
       localStorage.setItem('username', res.data.username);
       localStorage.setItem('role', res.data.role);

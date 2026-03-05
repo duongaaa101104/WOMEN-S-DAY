@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import "./Home.css";
 import FallingPetals from "../FallingPetals/FallingPetals";
+const API_BASE_URL = "https://women-s-day-guym.onrender.com/api/users"; 
 
 const Home = () => {
   const navigate = useNavigate();
@@ -15,13 +16,13 @@ const Home = () => {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/users/all");
+      const res = await axios.get(`${API_BASE_URL}/all`);
       setUsers(res.data);
     } catch (err) {
       console.error("Lỗi kết nối Backend:", err);
     }
   };
-
+//http://localhost:5000/api/users/all
   useEffect(() => {
     const storedUser = localStorage.getItem("username");
     if (storedUser) {
@@ -38,7 +39,7 @@ const Home = () => {
     }
     try {
       const res = await axios.patch(
-        `http://localhost:5000/api/users/like/${userId}`,
+        `${API_BASE_URL}/api/users/like/${userId}`,
         { username: currentUser }
       );
       setUsers((prevUsers) => {
@@ -58,7 +59,7 @@ const Home = () => {
     if (!commentText.trim()) return;
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/users/comment/${userId}`,
+        `${API_BASE_URL}/api/users/comment/${userId}`,
         { author: currentUser, text: commentText }
       );
       setActiveCommentUser(res.data);

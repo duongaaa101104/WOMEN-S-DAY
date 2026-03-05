@@ -13,13 +13,13 @@ function App() {
   // Lấy dữ liệu một lần duy nhất tại App
   const fetchData = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/users/all');
+      const res = await axios.get('https://women-s-day-guym.onrender.com');
       setUsers(res.data);
     } catch (err) {
       console.error("Lỗi lấy dữ liệu tại App:", err);
     }
   };
-
+//http://localhost:5000/api/users/all
   useEffect(() => {
     fetchData();
   }, []);

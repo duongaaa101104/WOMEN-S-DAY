@@ -3,26 +3,29 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Admin.css';
 
+// Khai báo Base URL tập trung để dễ quản lý
+const API_BASE_URL = "https://women-s-day-guym.onrender.com/api/users";
+
 const Admin = () => {
   const navigate = useNavigate();
-  const [savedItems, setSavedItems] = useState([]); // State lưu danh sách từ DB
+  const [savedItems, setSavedItems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [editingId, setEditingId] = useState(null); // Quản lý trạng thái Sửa/Thêm mới
+  const [editingId, setEditingId] = useState(null);
 
   const [formData, setFormData] = useState({
     fullname: '',
-    nickname: '', // Biệt danh cho lời chúc thân mật
+    nickname: '',
     age: '',
-    userWish: '', // Lời chúc tự viết tay
+    userWish: '',
     gender: 'female'
   });
   const [selectedFiles, setSelectedFiles] = useState([]);
 
-  // 1. Lấy danh sách dữ liệu từ Backend
+  // 1. Lấy danh sách dữ liệu (Sửa lỗi URL Render)
   const fetchUsers = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/users/all');
-      setSavedItems(res.data); // Đã sửa lỗi setUsers thành setSavedItems
+      const res = await axios.get(`${API_BASE_URL}/all`);
+      setSavedItems(res.data);
     } catch (err) {
       console.error("Lỗi lấy dữ liệu:", err);
     }
@@ -32,7 +35,6 @@ const Admin = () => {
     fetchUsers();
   }, []);
 
-  // 2. Kích hoạt chế độ Chỉnh sửa
   const handleEdit = (item) => {
     setEditingId(item._id);
     setFormData({
@@ -43,14 +45,14 @@ const Admin = () => {
       gender: item.gender || 'female'
     });
     setSelectedFiles([]);
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn lên đầu trang để sửa
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // 3. Xử lý Xóa đối tượng
+  // 2. Xử lý Xóa (Sửa URL Localhost thành Render)
   const handleDelete = async (id) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa không? 🌸")) {
       try {
-        await axios.delete(`http://localhost:5000/api/users/delete/${id}`);
+        await axios.delete(`${API_BASE_URL}/delete/${id}`);
         alert("Đã xóa thành công!");
         fetchUsers();
       } catch (err) {
@@ -59,12 +61,11 @@ const Admin = () => {
     }
   };
 
-  // 4. Xử lý gửi Form (Thêm mới hoặc Cập nhật)
+  // 3. Xử lý gửi Form (Sửa Logic FormData & URL)
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     const isChangingFiles = selectedFiles.length > 0;
 
-    // Kiểm tra số lượng ảnh (10-20 ảnh)
     if (!editingId || isChangingFiles) {
       if (selectedFiles.length < 10 || selectedFiles.length > 20) {
         alert("🌸 Vui lòng chọn từ 10 đến 20 ảnh đẹp nhất nhé!");
@@ -76,30 +77,34 @@ const Admin = () => {
     const data = new FormData();
     data.append('fullname', formData.fullname);
     data.append('nickname', formData.nickname); 
-    data.append('age', formData.age);
+    data.append('age', Number(formData.age)); // Ép kiểu số để tránh lỗi 500 tại Backend
     data.append('gender', formData.gender);
     data.append('userWish', formData.userWish);
     
     if (isChangingFiles) {
-      for (let i = 0; i < selectedFiles.length; i++) {
-        data.append('images', selectedFiles[i]);
-      }
+      // Sử dụng Array.from để đảm bảo gửi đúng định dạng mảng cho multer
+      Array.from(selectedFiles).forEach(file => {
+        data.append('images', file); 
+      });
     }
 
     try {
+      const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+      
       if (editingId) {
-        // Gửi yêu cầu cập nhật
-        await axios.put(`http://localhost:5000/api/users/update/${editingId}`, data);
+        // Cập nhật (Render URL)
+        await axios.put(`${API_BASE_URL}/update/${editingId}`, data, config);
         alert("Cập nhật thành công! ✨");
       } else {
-        // Gửi yêu cầu thêm mới
-        await axios.post('http://localhost:5000/api/users/add', data);
+        // Thêm mới (Render URL)
+        await axios.post(`${API_BASE_URL}/add`, data, config);
         alert("Thêm mới thành công! 💖");
       }
       resetForm();
       fetchUsers();
     } catch (err) {
-      alert("Lỗi hệ thống: " + (err.response?.data?.message || "Không thể xử lý"));
+      // Hiển thị lỗi chi tiết từ Server
+      alert("Lỗi: " + (err.response?.data?.message || "Không thể xử lý dữ liệu"));
     } finally {
       setLoading(false);
     }
@@ -115,11 +120,13 @@ const Admin = () => {
     <div className="admin-page">
       <div className="admin-header">
         <h2 className="admin-title">QUẢN TRỊ NỘI DUNG 🌸</h2>
-        <button className="btn-logout-admin" onClick={() => navigate('/login')}>Đăng xuất</button>
+        <button className="btn-logout-admin" onClick={() => {
+            localStorage.clear(); // Xóa sạch session khi thoát
+            navigate('/');
+        }}>Thoát</button>
       </div>
 
       <div className="admin-main-content">
-        {/* CỘT TRÁI: FORM NHẬP LIỆU */}
         <div className={`admin-column add-column ${editingId ? 'edit-mode-active' : ''}`}>
           <h3>{editingId ? "📝 CHỈNH SỬA" : "➕ THÊM MỚI"}</h3>
           
@@ -174,11 +181,10 @@ const Admin = () => {
           </form>
         </div>
 
-        {/* CỘT PHẢI: DANH SÁCH ĐÃ LƯU */}
         <div className="admin-column saves-column">
           <h3>💾 DANH SÁCH ĐÃ LƯU</h3>
           <div className="saved-list">
-            {savedItems.map(item => (
+            {savedItems.length > 0 ? savedItems.map(item => (
               <div key={item._id} className="saved-item">
                 <div className="item-info">
                   <p className="item-name">{item.nickname || item.fullname} <small>({item.fullname})</small></p>
@@ -189,7 +195,7 @@ const Admin = () => {
                   <button className="btn-delete-sm" onClick={() => handleDelete(item._id)}>Xóa</button>
                 </div>
               </div>
-            ))}
+            )) : <p style={{textAlign: 'center', padding: '20px', color: '#888'}}>Đang tải dữ liệu từ Render... (Có thể mất 30s) ✨</p>}
           </div>
         </div>
       </div>
