@@ -39,7 +39,7 @@ const Home = () => {
     }
     try {
       const res = await axios.patch(
-        `${API_BASE_URL}/api/users/like/${userId}`,
+        `${API_BASE_URL}/like/${userId}`,
         { username: currentUser }
       );
       setUsers((prevUsers) => {
@@ -59,7 +59,7 @@ const Home = () => {
     if (!commentText.trim()) return;
     try {
       const res = await axios.post(
-        `${API_BASE_URL}/api/users/comment/${userId}`,
+        `${API_BASE_URL}/comment/${userId}`,
         { author: currentUser, text: commentText }
       );
       setActiveCommentUser(res.data);

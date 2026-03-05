@@ -1,15 +1,15 @@
-import React, { useRef, useMemo } from 'react';
-import { useParams } from 'react-router-dom'; // Thêm để lấy ID từ URL
+import React, { useRef, useMemo, useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Image, OrbitControls, Stars, Float, PerspectiveCamera, Sparkles } from '@react-three/drei';
 import { Bloom, EffectComposer, Noise, Vignette } from '@react-three/postprocessing';
+import axios from 'axios';
 import * as THREE from 'three';
 import './EffectShowcase.css';
 
 // 1. Lõi phát sáng trung tâm
 function CentralSun() {
   const sunRef = useRef();
-  
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
     sunRef.current.rotation.y = t * 0.3;
@@ -24,79 +24,82 @@ function CentralSun() {
         <meshStandardMaterial
           color="#ffffff"
           emissive="#f06292"
-          emissiveIntensity={12}
+          emissiveIntensity={10}
           toneMapped={false}
         />
       </mesh>
-      <Sparkles count={150} scale={5} size={2} speed={0.6} color="#f06292" />
+      <Sparkles count={120} scale={6} size={2} speed={0.4} color="#f06292" />
     </group>
   );
 }
 
-// 2. Vành đai hạt ánh sáng
-function ParticleRing({ radius }) {
-  const points = useRef();
-  const count = 1000;
-  
-  const particles = useMemo(() => {
-    const pos = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const r = radius + (Math.random() - 0.5) * 2;
-      pos[i * 3] = Math.cos(angle) * r;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 0.8;
-      pos[i * 3 + 2] = Math.sin(angle) * r;
-    }
-    return pos;
-  }, [radius]);
+// 2. Hiệu ứng Sao băng (Shooting Stars)
+function SingleShootingStar({ speed, angle, color }) {
+  const mesh = useRef();
+  const trailLength = useMemo(() => 2 + Math.random() * 4, []);
 
-  useFrame((state) => {
-    points.current.rotation.y = state.clock.getElapsedTime() * 0.07;
+  useFrame((state, delta) => {
+    mesh.current.position.x += Math.cos(angle) * speed * delta;
+    mesh.current.position.y += Math.sin(angle) * speed * delta;
+    
+    if (mesh.current.position.distanceTo(new THREE.Vector3(0,0,0)) > 50) {
+      const resetAngle = angle + Math.PI + (Math.random() - 0.5);
+      const spawnRadius = 30 + Math.random() * 10;
+      mesh.current.position.x = Math.cos(resetAngle) * spawnRadius;
+      mesh.current.position.y = Math.sin(resetAngle) * spawnRadius;
+      mesh.current.position.z = (Math.random() - 0.5) * 15;
+    }
   });
 
   return (
-    <points ref={points}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={count} array={particles} itemSize={3} />
-      </bufferGeometry>
-      <pointsMaterial size={0.06} color="#ffb2d9" transparent opacity={0.7} />
-    </points>
+    <mesh ref={mesh} rotation={[0, 0, angle + Math.PI / 2]}>
+      <cylinderGeometry args={[0.015, 0.015, trailLength, 8]} />
+      <meshStandardMaterial color={color} emissive={color} emissiveIntensity={15} toneMapped={false} transparent opacity={0.8} />
+    </mesh>
   );
 }
 
-// 3. Quả cầu ảnh hiển thị riêng cho 1 người
-function PhotoSphere({ images, radius }) {
-  const group = useRef();
-  
-  const photoPositions = useMemo(() => {
+function ShootingStars({ count = 12 }) {
+  const starsData = useMemo(() => {
     const temp = [];
-    const count = images.length || 1;
     for (let i = 0; i < count; i++) {
-      const phi = Math.acos(-1 + (2 * i) / count);
-      const theta = Math.sqrt(count * Math.PI) * phi;
-      const position = new THREE.Vector3().setFromSphericalCoords(radius, phi, theta);
-      temp.push({ position, url: images[i], rotation: [0, -theta, 0] });
+      const angle = -Math.PI / 4 + (Math.random() - 0.5) * 0.5;
+      const speed = 12 + Math.random() * 18;
+      const color = Math.random() > 0.3 ? "#ffffff" : "#f06292";
+      temp.push({ angle, speed, color });
     }
     return temp;
-  }, [images, radius]);
+  }, [count]);
+  return <group>{starsData.map((star, i) => <SingleShootingStar key={i} {...star} />)}</group>;
+}
+
+// 3. Vành đai ảnh (Photo Ring)
+function PhotoRing({ images = [], radius }) {
+  const group = useRef();
+  const validImages = useMemo(() => images.filter(url => !!url), [images]);
+
+  const photoPositions = useMemo(() => {
+    const temp = [];
+    const count = validImages.length || 1;
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2;
+      const randomRadius = radius + (Math.random() - 0.5) * 1.5;
+      const randomHeight = (Math.random() - 0.5) * 0.8;
+      const position = new THREE.Vector3(Math.cos(angle) * randomRadius, randomHeight, Math.sin(angle) * randomRadius);
+      temp.push({ position, url: validImages[i], rotation: [0, -angle + Math.PI / 2, 0] });
+    }
+    return temp;
+  }, [validImages, radius]);
 
   useFrame((state, delta) => {
-    group.current.rotation.y += delta * 0.15; // Xoay nhanh hơn một chút vì ít ảnh hơn
+    if (group.current) group.current.rotation.y += delta * 0.1;
   });
 
   return (
     <group ref={group}>
       {photoPositions.map((p, i) => (
-        <Float key={i} speed={2.5} rotationIntensity={0.6} floatIntensity={1}>
-          <Image 
-            url={p.url} 
-            position={p.position} 
-            rotation={p.rotation} 
-            scale={[1.8, 2.4]} // Phóng to ảnh lên để không gian không bị trống
-            side={THREE.DoubleSide} 
-            transparent 
-            opacity={1} 
-          />
+        <Float key={i} speed={1.5} rotationIntensity={0.3} floatIntensity={0.4}>
+          <Image url={p.url} position={p.position} rotation={p.rotation} scale={[2.2, 3]} side={THREE.DoubleSide} transparent />
         </Float>
       ))}
     </group>
@@ -104,58 +107,58 @@ function PhotoSphere({ images, radius }) {
 }
 
 const EffectShowcase = ({ users = [] }) => {
-  const { id } = useParams(); // Lấy ID từ trình duyệt
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [targetUser, setTargetUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Tìm người dùng cụ thể dựa trên ID
-  const currentUser = useMemo(() => {
-    return users.find(u => u._id === id);
-  }, [users, id]);
+  useEffect(() => {
+    const found = users.find(u => u._id === id);
+    if (found) {
+      setTargetUser(found);
+      setLoading(false);
+    } else {
+      const fetchDirect = async () => {
+        try {
+          const res = await axios.get('https://women-s-day-guym.onrender.com/api/users/all');
+          const user = res.data.find(u => u._id === id);
+          setTargetUser(user);
+        } catch (err) { console.error("Lỗi lấy dữ liệu:", err); } 
+        finally { setLoading(false); }
+      };
+      fetchDirect();
+    }
+  }, [id, users]);
 
-  // Nếu chưa có dữ liệu hoặc không tìm thấy người dùng
-  if (!currentUser) {
-    return (
-      <div className="loading-screen" style={{ color: 'white', background: 'black', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <h3>Đang khởi tạo không gian riêng... ✨</h3>
-      </div>
-    );
-  }
-
-  const userImages = currentUser.images || [];
+  if (loading) return <div className="loading-screen"><h3>Đang mở cổng không gian... ✨</h3></div>;
 
   return (
     <div className="galaxy-container">
       <div className="galaxy-header">
-        <button className="btn-back-fancy" onClick={() => window.history.back()}>
-          <span>⬅ QUAY LẠI</span>
-        </button>
+        <button className="btn-back-fancy" onClick={() => navigate('/home')}><span>⬅ QUAY LẠI</span></button>
       </div>
 
       <Canvas dpr={[1, 2]} gl={{ antialias: false }}>
-        <PerspectiveCamera makeDefault position={[0, 0, 16]} fov={60} />
-        
-        <Stars radius={100} depth={50} count={8000} factor={5} fade speed={1.5} />
-        <ambientLight intensity={0.5} />
-        <pointLight position={[0, 0, 0]} intensity={5} color="#f06292" />
+        <PerspectiveCamera makeDefault position={[0, 6, 22]} fov={60} far={2000} />
+        <Stars radius={250} depth={100} count={8000} factor={4} fade speed={1} />
+        <ambientLight intensity={0.6} />
+        <pointLight position={[0, 0, 0]} intensity={12} color="#f06292" />
 
         <CentralSun />
-        <ParticleRing radius={3} />
-        
-        {/* Chỉ hiển thị ảnh của người được chọn */}
-        <PhotoSphere images={userImages} radius={7.5} />
+        <ShootingStars count={15} />
+        <PhotoRing images={targetUser?.images || []} radius={9} />
 
         <EffectComposer disableNormalPass>
-          <Bloom luminanceThreshold={1} intensity={3} mipmapBlur radius={0.5} />
-          <Noise opacity={0.05} />
-          <Vignette eskil={false} offset={0.1} darkness={1.2} />
+          <Bloom luminanceThreshold={1} intensity={2} mipmapBlur radius={0.4} />
+          <Vignette offset={0.3} darkness={0.9} />
         </EffectComposer>
 
-        <OrbitControls enablePan={false} minDistance={5} maxDistance={25} enableDamping />
+        <OrbitControls enablePan={false} minDistance={7} maxDistance={200} enableDamping />
       </Canvas>
 
       <div className="galaxy-footer-fancy">
-        {/* Hiện tên và lời chúc riêng của người đó */}
-        <h1 className="glow-text">{currentUser.nickname || currentUser.fullname}</h1>
-        <p className="subtitle">"{currentUser.userWish}"</p>
+        <h1 className="glow-text">{targetUser?.nickname || targetUser?.fullname}</h1>
+        <p className="subtitle">"{targetUser?.userWish}"</p>
       </div>
     </div>
   );

@@ -99,3 +99,157 @@
   .top-1-wish { font-size: 1.3rem; }
   .image-grid { grid-template-columns: 1fr; }
 }
+/* --- PHẦN BÌNH LUẬN (COMMENT POPUP) --- */
+
+/* Overlay nền mờ phía sau */
+.comment-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(216, 27, 96, 0.2); /* Màu hồng cực nhẹ mờ */
+  backdrop-filter: blur(8px);
+  z-index: 30000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Khung nội dung bình luận */
+.comment-popup-content {
+  background: var(--white);
+  width: 100%;
+  max-width: 500px;
+  border-radius: 30px;
+  box-shadow: 0 25px 50px rgba(216, 27, 96, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 2px solid var(--pink-soft);
+}
+
+/* Header của Popup */
+.popup-header {
+  padding: 20px 25px;
+  background: var(--pink-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--pink-soft);
+}
+
+.popup-header h3 {
+  margin: 0;
+  color: var(--pink-deep);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.popup-header button {
+  background: var(--white);
+  border: 1px solid var(--pink-soft);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--pink-deep);
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.popup-header button:hover {
+  background: var(--pink-deep);
+  color: white;
+}
+
+/* Danh sách lời chúc */
+.popup-comment-list {
+  padding: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #fff;
+}
+
+/* Từng mục bình luận */
+.popup-comment-item {
+  background: var(--pink-light);
+  padding: 12px 18px;
+  border-radius: 20px;
+  border-bottom-left-radius: 5px; /* Tạo hiệu ứng bong bóng chat */
+  align-self: flex-start;
+  max-width: 90%;
+}
+
+.comment-author {
+  display: block;
+  font-weight: 800;
+  color: var(--pink-deep);
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.comment-text {
+  margin: 0;
+  color: #444;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* Khung nhập liệu phía dưới */
+.popup-input-group {
+  padding: 20px;
+  background: var(--white);
+  border-top: 1px solid var(--pink-soft);
+  display: flex;
+  gap: 10px;
+}
+
+.popup-input-group input {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 50px;
+  border: 2px solid var(--pink-light);
+  outline: none;
+  font-size: 0.9rem;
+  transition: 0.3s;
+}
+
+.popup-input-group input:focus {
+  border-color: var(--pink-main);
+  background: var(--pink-light);
+}
+
+.popup-input-group button {
+  background: var(--pink-main);
+  color: white;
+  border: none;
+  padding: 0 25px;
+  border-radius: 50px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.popup-input-group button:hover:not(:disabled) {
+  background: var(--pink-deep);
+  transform: scale(1.05);
+}
+
+.popup-input-group button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Tùy chỉnh thanh cuộn cho đẹp */
+.popup-comment-list::-webkit-scrollbar {
+  width: 6px;
+}
+.popup-comment-list::-webkit-scrollbar-thumb {
+  background: var(--pink-soft);
+  border-radius: 10px;
+}
