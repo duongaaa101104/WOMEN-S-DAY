@@ -55,7 +55,7 @@ router.post('/login-user', async (req, res) => {
 router.post('/add', upload.array('images', 20), async (req, res) => {
   try {
     const { fullname, nickname, age, gender, userWish } = req.body;
-    const imageUrls = req.files ? req.files.map(file => file.path) : [];
+    const imageUrls = req.files ? req.files.map(file => file.path.replace("http://", "https://")) : [];
 
     const newUser = new UserContent({
       fullname,
@@ -81,7 +81,7 @@ router.put('/update/:id', upload.array('images', 20), async (req, res) => {
 
     // Nếu có tải ảnh mới lên thì cập nhật lại mảng ảnh
     if (req.files && req.files.length > 0) {
-      updateData.images = req.files.map(file => file.path);
+      updateData.images = req.files.map(file => file.path.replace("http://", "https://"));
     }
 
     const updatedUser = await UserContent.findByIdAndUpdate(
