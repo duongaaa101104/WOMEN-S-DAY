@@ -4,9 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import "./Home.css";
 import FallingPetals from "../FallingPetals/FallingPetals";
-
+import MusicPlayer from "../MusicPlayer/MusicPlayer";
 // Đảm bảo URL này trỏ chính xác đến Backend trên Render
-const API_BASE_URL = "https://women-s-day-guym.onrender.com/api/users"; 
+const API_BASE_URL = "https://women-s-day-guym.onrender.com/api/users";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -48,10 +48,9 @@ const Home = () => {
     }
     try {
       // Đã sửa lỗi lặp URL: chỉ dùng ${API_BASE_URL}/like/...
-      const res = await axios.patch(
-        `${API_BASE_URL}/like/${userId}`,
-        { username: currentUser }
-      );
+      const res = await axios.patch(`${API_BASE_URL}/like/${userId}`, {
+        username: currentUser,
+      });
       setUsers((prevUsers) => {
         const updated = prevUsers.map((u) => (u._id === userId ? res.data : u));
         return updated.sort((a, b) => b.likes - a.likes);
@@ -70,11 +69,11 @@ const Home = () => {
     if (!commentText.trim()) return;
     try {
       // Đã sửa lỗi lặp URL: chỉ dùng ${API_BASE_URL}/comment/...
-      const res = await axios.post(
-        `${API_BASE_URL}/comment/${userId}`,
-        { author: currentUser, text: commentText }
-      );
-      
+      const res = await axios.post(`${API_BASE_URL}/comment/${userId}`, {
+        author: currentUser,
+        text: commentText,
+      });
+
       // Cập nhật state cho cả Popup bình luận và danh sách chính
       setActiveCommentUser(res.data);
       setCommentText("");
@@ -93,7 +92,7 @@ const Home = () => {
   return (
     <div className="home-container">
       <FallingPetals />
-
+      <MusicPlayer />
       {/* Header Bar */}
       <div className="home-top-bar">
         <h1 className="header-title">HAPPY WOMEN'S DAY 8/3</h1>
@@ -116,16 +115,26 @@ const Home = () => {
         <div className="rank-list">
           <div className="rank-header">
             <h3>Bảng xếp hạng 🏆</h3>
-            <span className="rank-subtitle">Top 5 nàng thơ được yêu thích nhất</span>
+            <span className="rank-subtitle">
+              Top 5 nàng thơ được yêu thích nhất
+            </span>
           </div>
           <div className="rank-items-container">
             {users.slice(0, 5).map((user, index) => (
               <div key={user._id} className={`rank-item rank-${index + 1}`}>
                 <div className="rank-info">
                   <span className="rank-number">
-                    {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `${index + 1}.`}
+                    {index === 0
+                      ? "🥇"
+                      : index === 1
+                        ? "🥈"
+                        : index === 2
+                          ? "🥉"
+                          : `${index + 1}.`}
                   </span>
-                  <span className="rank-name">{user.nickname || user.fullname}</span>
+                  <span className="rank-name">
+                    {user.nickname || user.fullname}
+                  </span>
                 </div>
                 <span className="rank-likes-badge">❤️ {user.likes || 0}</span>
               </div>
@@ -142,11 +151,15 @@ const Home = () => {
                 <div className="top-1-content">
                   <p className="top-1-wish">"{users[0].userWish}"</p>
                   <div className="top-1-divider"></div>
-                  <small className="top-1-author">{users[0].nickname || users[0].fullname}</small>
+                  <small className="top-1-author">
+                    {users[0].nickname || users[0].fullname}
+                  </small>
                 </div>
               </>
             ) : (
-              <div className="top-1-empty"><p>Chào mừng bạn đến với Galaxy 8/3! 🌸</p></div>
+              <div className="top-1-empty">
+                <p>Chào mừng bạn đến với Galaxy 8/3! 🌸</p>
+              </div>
             )}
           </div>
         </div>
@@ -167,21 +180,28 @@ const Home = () => {
                 {user.images && user.images[0] ? (
                   <img src={getSecureUrl(user.images[0])} alt={user.fullname} />
                 ) : (
-                  <div className="no-img-text"><span>{user.nickname || user.fullname}</span></div>
+                  <div className="no-img-text">
+                    <span>{user.nickname || user.fullname}</span>
+                  </div>
                 )}
               </div>
               <div className="interaction-bar">
-                <span className="user-name">{user.nickname || user.fullname}</span>
+                <span className="user-name">
+                  {user.nickname || user.fullname}
+                </span>
                 <div className="action-group">
-                  <div 
-                    className={`action-btn like-btn ${hasLiked ? "active" : ""}`} 
+                  <div
+                    className={`action-btn like-btn ${hasLiked ? "active" : ""}`}
                     onClick={(e) => handleLike(e, user._id)}
                   >
                     {hasLiked ? "❤️" : "🤍"} {user.likes || 0}
                   </div>
-                  <div 
-                    className="action-btn comment-btn" 
-                    onClick={(e) => { e.stopPropagation(); setActiveCommentUser(user); }}
+                  <div
+                    className="action-btn comment-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveCommentUser(user);
+                    }}
                   >
                     💬 {user.comments?.length || 0}
                   </div>
@@ -195,19 +215,43 @@ const Home = () => {
       {/* Album Modal */}
       <AnimatePresence>
         {activeUser && (
-          <motion.div className="album-fixed-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setActiveUser(null)}>
-            <motion.div className="album-modal-content" initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }} onClick={(e) => e.stopPropagation()}>
+          <motion.div
+            className="album-fixed-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setActiveUser(null)}
+          >
+            <motion.div
+              className="album-modal-content"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.8 }}
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="modal-header">
                 <h2>Album của {activeUser.nickname || activeUser.fullname}</h2>
                 <div className="header-actions">
-                  <button className="btn-go-effect" onClick={() => navigate(`/effect-showcase/${activeUser._id}`)}>
+                  <button
+                    className="btn-go-effect"
+                    onClick={() =>
+                      navigate(`/effect-showcase/${activeUser._id}`)
+                    }
+                  >
                     ✨ Xem Galaxy
                   </button>
-                  <button className="btn-close-modal" onClick={() => setActiveUser(null)}>✕</button>
+                  <button
+                    className="btn-close-modal"
+                    onClick={() => setActiveUser(null)}
+                  >
+                    ✕
+                  </button>
                 </div>
               </div>
               <div className="modal-body">
-                <div className="ai-wish-box"><p>{activeUser.userWish}</p></div>
+                <div className="ai-wish-box">
+                  <p>{activeUser.userWish}</p>
+                </div>
                 <div className="modal-gallery">
                   {activeUser.images.map((img, i) => (
                     <img key={i} src={getSecureUrl(img)} alt="8/3" />
@@ -222,22 +266,25 @@ const Home = () => {
       {/* Comment Popup */}
       <AnimatePresence>
         {activeCommentUser && (
-          <motion.div 
-            className="comment-popup-overlay" 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }} 
+          <motion.div
+            className="comment-popup-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={() => setActiveCommentUser(null)}
           >
-            <motion.div 
-              className="comment-popup-content" 
-              initial={{ y: 50 }} 
-              animate={{ y: 0 }} 
-              exit={{ y: 50 }} 
+            <motion.div
+              className="comment-popup-content"
+              initial={{ y: 50 }}
+              animate={{ y: 0 }}
+              exit={{ y: 50 }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="popup-header">
-                <h3>Lời chúc tới {activeCommentUser.nickname || activeCommentUser.fullname}</h3>
+                <h3>
+                  Lời chúc tới{" "}
+                  {activeCommentUser.nickname || activeCommentUser.fullname}
+                </h3>
                 <button onClick={() => setActiveCommentUser(null)}>✕</button>
               </div>
               <div className="popup-comment-list">
@@ -249,20 +296,29 @@ const Home = () => {
                     </div>
                   ))
                 ) : (
-                  <p className="no-comments">Chưa có lời chúc nào. Hãy là người đầu tiên! 🌸</p>
+                  <p className="no-comments">
+                    Chưa có lời chúc nào. Hãy là người đầu tiên! 🌸
+                  </p>
                 )}
               </div>
               <div className="popup-input-group">
                 <input
                   type="text"
-                  placeholder={currentUser === "Khách" ? "Đăng nhập để chúc..." : `Lời chúc từ ${currentUser}...`}
+                  placeholder={
+                    currentUser === "Khách"
+                      ? "Đăng nhập để chúc..."
+                      : `Lời chúc từ ${currentUser}...`
+                  }
                   value={commentText}
                   disabled={currentUser === "Khách"}
                   onChange={(e) => setCommentText(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSendComment(activeCommentUser._id)}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" &&
+                    handleSendComment(activeCommentUser._id)
+                  }
                 />
-                <button 
-                  disabled={currentUser === "Khách" || !commentText.trim()} 
+                <button
+                  disabled={currentUser === "Khách" || !commentText.trim()}
                   onClick={() => handleSendComment(activeCommentUser._id)}
                 >
                   Gửi
