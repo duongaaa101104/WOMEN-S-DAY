@@ -116,7 +116,7 @@ const Home = () => {
           <div className="rank-header">
             <h3>Bảng xếp hạng 🏆</h3>
             <span className="rank-subtitle">
-              Top 5 nàng thơ được yêu thích nhất
+              Top nàng thơ được yêu thích nhất
             </span>
           </div>
           <div className="rank-items-container">
@@ -158,7 +158,7 @@ const Home = () => {
               </>
             ) : (
               <div className="top-1-empty">
-                <p>Chào mừng bạn đến với Galaxy 8/3! 🌸</p>
+                <p>Chào mừng bạn đến với HAPPY WOMEN'S DAY 8/3! 🌸</p>
               </div>
             )}
           </div>
@@ -238,7 +238,7 @@ const Home = () => {
                       navigate(`/effect-showcase/${activeUser._id}`)
                     }
                   >
-                    ✨ Xem Galaxy
+                    ✨ Xem Thử đi
                   </button>
                   <button
                     className="btn-close-modal"
